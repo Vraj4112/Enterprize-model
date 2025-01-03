@@ -2,6 +2,7 @@ require("dotenv").config();
 
 const express = require("express");
 const bodyParser = require("body-parser");
+const cookieParser = require("cookie-parser");
 const session = require("express-session");
 const db = require("./src/database/db_connect");
 
@@ -10,6 +11,24 @@ const PORT = process.env.PORT || 3002;
 
 // Middleware
 app.use(bodyParser.json());
+//----------**********Cookie concept implemented start
+app.use(cookieParser(process.env.COOKIE_PARSER_SECRET_KEY || "vraj123")); // Replace with a strong secret
+
+app.get("/set-cookie", (req, res) => {
+  res.cookie("username", "JohnDoe", { maxAge: 10 * 60 * 1000, httpOnly: true });
+  res.send("Cookie has been set!");
+});
+
+app.get("/get-cookie", (req, res) => {
+  const username = req.cookies.username;
+  res.send(username ? `Hello, ${username}` : "No cookie found");
+});
+
+app.get("/clear-cookie", (req, res) => {
+  res.clearCookie("username");
+  res.send("Cookie has been cleared!");
+});
+//----------**********Cookie concept implemented end
 
 // Test Route
 app.get("/", (req, res) => {
